@@ -6,13 +6,25 @@
 
 #include <fmt/format.h>
 
+#include <string>
+#include <iostream>
 #include <userver/clients/dns/component.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
 #include <userver/storages/postgres/cluster.hpp>
+#include <userver/storages/postgres/io/row_types.hpp>
+
 #include <userver/storages/postgres/component.hpp>
 #include <userver/utils/assert.hpp>
 
 namespace yet_another_disk {
+
+struct item{
+  std::string id;
+  std::string url;
+  std::optional<std::string> parentId;
+  int size;
+  std::string type;
+};
 
 namespace {
 
@@ -31,24 +43,41 @@ class Nodes final : public userver::server::handlers::HttpHandlerBase {
   std::string HandleRequestThrow(
       const userver::server::http::HttpRequest& request,
       userver::server::request::RequestContext&) const override {
-    const auto& name = request.GetArg("name");
+    const auto& id = request.GetArg("id");
 
-    auto user_type = UserType::kFirstTime;
-    if (!name.empty()) {
+
+//    if (!id.empty()) {
       auto result = pg_cluster_->Execute(
           userver::storages::postgres::ClusterHostType::kMaster,
-          "INSERT INTO hello_schema.users(name, count) VALUES($1, 1) "
-          "ON CONFLICT (name) "
-          "DO UPDATE SET count = users.count + 1 "
-          "RETURNING users.count",
-          name);
+          "SELECT * FROM file_schema.items WHERE id=$1",
+          id);
 
-      if (result.AsSingleRow<int>() > 1) {
-        user_type = UserType::kKnown;
+//    }
+
+    using MyRowType = std::tuple<std::string, std::string>;
+    auto iteration = result.AsSetOf<yet_another_disk::item>(userver::storages::postgres::kRowTag);
+
+    std::string json = R"({ "id": )";
+    //бессмысленный цикл for
+    for(auto row : iteration){
+      json += row.id;
+      json += R"(, "url": )";
+      json += row.url;
+      json += R"(, "parentId": )";
+      if (row.parentId.has_value())
+      {
+        json += row.parentId.value();
       }
+      else {
+        json  += "null";
+      }
+      json += R"(, "size": )";
+      json += std::to_string(row.size);
+      json += R"( })";
     }
 
-    return yet_another_disk::GetNode(name, user_type);
+
+    return yet_another_disk::GetNode(json);
   }
 
   userver::storages::postgres::ClusterPtr pg_cluster_;
@@ -56,25 +85,15 @@ class Nodes final : public userver::server::handlers::HttpHandlerBase {
 
 }  // namespace
 
-std::string GetNode(std::string_view name, UserType type) {
-  if (name.empty()) {
-    name = "unknown user";
-  }
+std::string GetNode(std::string name) {
 
-  switch (type) {
-    case UserType::kFirstTime:
-      return fmt::format("Hello, {}!\n", name);
-    case UserType::kKnown:
-      return fmt::format("Hi again, {}!\n", name);
-  }
+  return name;
 
   UASSERT(false);
 }
 
 void AppendNodes(userver::components::ComponentList& component_list) {
   component_list.Append<Nodes>();
-  component_list.Append<userver::components::Postgres>("postgres-db-1");
-  component_list.Append<userver::clients::dns::Component>();
 }
 
-}  // namespace pg_service_template
+}  // namespace YetAnotherDiskOpenAPI

@@ -1,6 +1,6 @@
 # yaml
 
-config_vars: /home/user/.local/etc/pg_service_template/config_vars.yaml
+config_vars: /usr/local/etc/YetAnotherDiskOpenAPI/config_vars.yaml
 
 components_manager:
     coro_pool:
@@ -33,12 +33,12 @@ components_manager:
                     overflow_behavior: discard  # Drop logs if the system is too busy to write them down.
 
         tracer:                              # Component that helps to trace execution times and requests in logs.
-            service-name: pg_service_template   # "You know. You all know exactly who I am. Say my name. " (c)
+            service-name: YetAnotherDiskOpenAPI   # "You know. You all know exactly who I am. Say my name. " (c)
 
         dynamic-config:                      # Dynamic config storage options, do nothing
             fs-cache-path: ''
         dynamic-config-fallbacks:            # Load options from file and push them into the dynamic config storage.
-            fallback-path: /home/user/.local/etc/pg_service_template/dynamic_config_fallback.json
+            fallback-path: /usr/local/etc/YetAnotherDiskOpenAPI/dynamic_config_fallback.json
         testsuite-support: {}
 
         http-client:
@@ -63,10 +63,9 @@ components_manager:
             task_processor: main-task-processor  # Run it on CPU bound task processor
 
         handler-nodes:
-            path: /nodes
-            method: GET
-            task_processor: main-task-processor
-
+                    path: /nodes
+                    method: GET
+                    task_processor: main-task-processor
         postgres-db-1:
             dbconnection: $dbconnection
             blocking_task_processor: fs-task-processor
