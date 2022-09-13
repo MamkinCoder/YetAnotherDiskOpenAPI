@@ -50,6 +50,12 @@
         "network_timeout_ms": 500,
         "statement_timeout_ms": 250
       }
+    },
+    "/nodes": {
+      "GET": {
+        "network_timeout_ms": 500,
+        "statement_timeout_ms": 250
+      }
     }
   },
   "POSTGRES_QUERIES_COMMAND_CONTROL": {},

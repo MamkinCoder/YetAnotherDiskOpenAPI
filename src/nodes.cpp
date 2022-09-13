@@ -1,4 +1,8 @@
-#include "hello.hpp"
+//
+// Created by yarik on 13.09.22.
+//
+
+#include "nodes.hpp"
 
 #include <fmt/format.h>
 
@@ -12,11 +16,11 @@ namespace yet_another_disk {
 
 namespace {
 
-class Hello final : public userver::server::handlers::HttpHandlerBase {
+class Nodes final : public userver::server::handlers::HttpHandlerBase {
  public:
-  static constexpr std::string_view kName = "handler-hello";
+  static constexpr std::string_view kName = "handler-nodes";
 
-  Hello(const userver::components::ComponentConfig& config,
+  Nodes(const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context)
       : HttpHandlerBase(config, component_context),
         pg_cluster_(
@@ -44,7 +48,7 @@ class Hello final : public userver::server::handlers::HttpHandlerBase {
       }
     }
 
-    return yet_another_disk::SayHelloTo(name, user_type);
+    return yet_another_disk::GetNode(name, user_type);
   }
 
   userver::storages::postgres::ClusterPtr pg_cluster_;
@@ -52,7 +56,7 @@ class Hello final : public userver::server::handlers::HttpHandlerBase {
 
 }  // namespace
 
-std::string SayHelloTo(std::string_view name, UserType type) {
+std::string GetNode(std::string_view name, UserType type) {
   if (name.empty()) {
     name = "unknown user";
   }
@@ -67,8 +71,8 @@ std::string SayHelloTo(std::string_view name, UserType type) {
   UASSERT(false);
 }
 
-void AppendHello(userver::components::ComponentList& component_list) {
-  component_list.Append<Hello>();
+void AppendNodes(userver::components::ComponentList& component_list) {
+  component_list.Append<Nodes>();
   component_list.Append<userver::components::Postgres>("postgres-db-1");
   component_list.Append<userver::clients::dns::Component>();
 }

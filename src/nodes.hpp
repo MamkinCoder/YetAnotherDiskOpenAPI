@@ -1,3 +1,7 @@
+//
+// Created by yarik on 13.09.22.
+//
+
 #pragma once
 
 #include <string>
@@ -8,8 +12,7 @@
 namespace yet_another_disk {
 
 enum class UserType { kFirstTime, kKnown };
-std::string SayHelloTo(std::string_view name, UserType type);
+std::string GetNode(std::string_view name, UserType type);
 
-void AppendHello(userver::components::ComponentList& component_list);
-
-}  // namespace pg_service_template
+void AppendNodes(userver::components::ComponentList& component_list);
+}
