@@ -1,3 +1,8 @@
+# Файлы, в которых больше всего смысла
+src/nodes.cpp
+
+postgresql/schemas/file_system.sql
+
 # YetAnotherDiskOpenAPI
 
 Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver) with PostgreSQL.
