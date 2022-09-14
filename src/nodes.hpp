@@ -6,13 +6,11 @@
 
 #include <string>
 #include <string_view>
-
 #include <userver/components/component_list.hpp>
 
 namespace yet_another_disk {
 
-enum class UserType { kFirstTime, kKnown };
-std::string GetNode(std::string_view name, UserType type);
+std::string GetNode(std::string name);
 
 void AppendNodes(userver::components::ComponentList& component_list);
 }

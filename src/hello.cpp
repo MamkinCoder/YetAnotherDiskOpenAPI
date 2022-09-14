@@ -73,4 +73,4 @@ void AppendHello(userver::components::ComponentList& component_list) {
   component_list.Append<userver::clients::dns::Component>();
 }
 
-}  // namespace pg_service_template
+}  // namespace YetAnotherDiskOpenAPI
